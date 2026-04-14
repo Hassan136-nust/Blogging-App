@@ -1,17 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <%- include('partials/head') %>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .navbar {
+            background: rgba(0,0,0,0.8) !important;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.4);
+        }
+        .form-container {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .blog-card {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
 </head>
 <body>
-    <%- include('partials/head') %>
-<%- include('partials/nav') %>
-<%- include('partials/script') %>
-</body>
-<!-- <include partials/head.ejs>
-</include partials/script.js>
-</include partials/nav.ejs> -->
+    <%- include('partials/nav') %>
 
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2 class="text-center mb-4" style="color: #333;">Create a New Blog</h2>
+            <form action="/blogs" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Blog Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">Blog Content</label>
+                    <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="coverImage" class="form-label">Cover Image</label>
+                    <input type="file" class="form-control" id="coverImage" name="coverImage" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Create Blog</button>
+            </form>
+        </div>
+
+        <h2 class="text-center mb-4 text-white">Recent Blogs</h2>
+        <div class="row">
+            <% blogs.forEach((blog, index) => { %>
+                <div class="col-md-4 mb-4 blog-card" style="animation-delay: <%= index * 0.1 %>s;">
+                    <div class="card h-100">
+                        <% if (blog.coverImageURL) { %>
+                            <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="Cover Image" style="height: 200px; object-fit: cover;">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= blog.title %></h5>
+                            <p class="card-text"><%= blog.content.substring(0, 100) %>...</p>
+                            <p class="card-text"><small class="text-muted">By <%= blog.createdBy.firstname %> on <%= new Date(blog.createdAt).toLocaleDateString() %></small></p>
+                            <a href="/blogs/<%= blog._id %>" class="btn btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <%- include('partials/script') %>
+</body>
 </html>

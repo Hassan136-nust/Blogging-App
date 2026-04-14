@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {createHmac , randomBytes} = require("crypto")
+const {createTokenForUser} = require('../services/authentication');
 const userSchema = new mongoose.Schema({
     firstname:{
         type : String,
@@ -61,7 +62,9 @@ userSchema.statics.matchPassword = async function(email, password) {
     delete userObj.password;
     delete userObj.salt;
 
-    return userObj;
+    const token = createTokenForUser(userObj);
+    return token;
+
 };
 
 const User = mongoose.model("User", userSchema);
